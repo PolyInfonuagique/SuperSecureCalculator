@@ -11,12 +11,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class TaskManager extends Observable{
 
     private ConcurrentLinkedQueue<ITask> queue = new ConcurrentLinkedQueue<>();
+    private int nbTaskToExecute;
+    private int result = 0;
+    private final Object MUTEX_RESULT = new Object();
 
-    public void addTask(String filename){
+    public TaskManager(String filename) {
+         addTask(filename);
+    }
+
+    private void addTask(String filename){
         queue.addAll(TaskReader.getTaskList(filename));
-
-        this.setChanged();
-        this.notifyObservers();
+        nbTaskToExecute = queue.size();
     }
 
     public synchronized List<ITask> getTask(int nb){
@@ -25,11 +30,44 @@ public class TaskManager extends Observable{
 
         while(i<nb && !queue.isEmpty()){
              returnTask.add(queue.poll());
+            i++;
         }
 
         return returnTask;
     }
 
+    public int getResult(){
+        synchronized (MUTEX_RESULT){
+            return result;
+        }
+    }
 
+    public boolean isFinish(){
+        synchronized (MUTEX_RESULT){
+            return nbTaskToExecute == 0;
+        }
+    }
 
+    public void updateResult(int intermediateResult, int nbTaskHandled){
+        synchronized (MUTEX_RESULT){
+            result = (intermediateResult + result) % 5000;
+            nbTaskToExecute -= nbTaskHandled;
+
+            if(nbTaskToExecute == 0){
+                this.setChanged();
+                this.notifyObservers();
+            }
+        }
+    }
+
+    public void addTask(List<ITask> task){
+        this.queue.addAll(task);
+
+        this.setChanged();
+        this.notifyObservers();
+    }
+
+    public boolean isEmpty(){
+        return queue.isEmpty();
+    }
 }
