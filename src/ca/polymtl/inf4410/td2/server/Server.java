@@ -32,7 +32,7 @@ public class Server implements ServerInterface {
 		}
 		try {
 			String name = "Server";
-			ServerInterface Server = new Server(Integer.parseInt(args[0]),Double.parseDouble(args[1]));
+			ServerInterface server = new Server(Integer.parseInt(args[0]),Double.parseDouble(args[1]));
 			ServerInterface stub =
 					(ServerInterface) UnicastRemoteObject.exportObject(server,0);
 
