@@ -20,7 +20,7 @@ public class Server implements ServerInterface {
 	//pourcentage de "malice" du serveur
 	private double malice;
 	
-	protected Server(Integer q, Integer malice) throws RemoteException {
+	protected Server(Integer q, double malice) throws RemoteException {
 		this.q = q;
 		this.malice=malice;
 	}
@@ -32,7 +32,7 @@ public class Server implements ServerInterface {
 		}
 		try {
 			String name = "Server";
-			ServerInterface server = new Server(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
+			ServerInterface Server = new Server(Integer.parseInt(args[0]),Double.parseDouble(args[1]));
 			ServerInterface stub =
 					(ServerInterface) UnicastRemoteObject.exportObject(server,0);
 
@@ -56,6 +56,7 @@ public class Server implements ServerInterface {
 		
 		//CORPS
 		//prise en compte du refus
+		System.out.println("Traitement de " + tasks.size() + "opérations.");
 		if(tasks.size() > q)
 			T=((tasks.size()-q)/9*q)*100;
 			random_refus = Math.random();
@@ -76,22 +77,22 @@ public class Server implements ServerInterface {
 			for(ITask t : tasks)
 			{
 				if(t instanceof PrimeTask){
-					result = (result + Operations.prime(t.getValue())) % 5000 + 10;
+					result = (result + Operations.prime(t.getValue())) % 4000 + 50;
 				}
 				else if(t instanceof FibonacciTask){
-					result = (result + Operations.fib(t.getValue())) % 5000 - 10;
+					result = (result + Operations.fib(t.getValue())) % 4000 - 10;
 				}
 			}
 		else for(ITask t : tasks)
-		{
-			if(t instanceof PrimeTask){
-				result = (result + Operations.prime(t.getValue())) % 5000;
+			{
+				if(t instanceof PrimeTask){
+					result = (result + Operations.prime(t.getValue())) % 5000;
+				}
+				else if(t instanceof FibonacciTask){
+					result = (result + Operations.fib(t.getValue())) % 5000;
+				}
 			}
-			else if(t instanceof FibonacciTask){
-				result = (result + Operations.fib(t.getValue())) % 5000;
-			}
-		}
-		
+		System.out.println("Resultat des calculs :" + result);
 		return result;
 	}
 	
