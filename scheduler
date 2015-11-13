@@ -1,0 +1,6 @@
+pushd $(dirname $0) > /dev/null
+basepath=$(pwd)
+popd > /dev/null
+
+java -cp $basepath/scheduler.jar:$basepath/shared.jar -Djava.security.policy=$basepath/policy ca.polymtl.inf4410.td2.scheduler.Main $*
+
