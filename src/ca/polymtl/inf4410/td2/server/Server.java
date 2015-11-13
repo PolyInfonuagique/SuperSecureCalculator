@@ -32,11 +32,13 @@ public class Server implements ServerInterface {
 		}
 		try {
 			String name = "Server";
-			ServerInterface Server = new Server(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
+			ServerInterface server = new Server(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
 			ServerInterface stub =
-					(ServerInterface) UnicastRemoteObject.exportObject(Server,0);
+					(ServerInterface) UnicastRemoteObject.exportObject(server,0);
+
 			Registry registry = LocateRegistry.getRegistry();
 			registry.rebind(name,stub);
+
 			System.out.println("Server Bound");
 		}catch (Exception e) {
 			System.err.println("Server Exception:");

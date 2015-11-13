@@ -1,6 +1,8 @@
 package ca.polymtl.inf4410.td2.scheduler.utils;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -11,9 +13,10 @@ public class PropertiesReader {
     private Properties properties;
     public PropertiesReader(String filename) {
         properties = new Properties();
+        File resource = new File(filename);
 
-        InputStream propertiesStream = getClass().getClassLoader().getResourceAsStream(filename);
         try {
+            InputStream propertiesStream = new FileInputStream(resource);
             properties.load(propertiesStream);
         } catch (IOException e) {
             e.printStackTrace();

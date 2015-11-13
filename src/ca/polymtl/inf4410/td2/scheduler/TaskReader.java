@@ -31,10 +31,8 @@ public class TaskReader {
     public static List<ITask> getTaskList(String filename){
         List<ITask> list = new ArrayList<>();
 
-        InputStream stream = TaskReader.class.getClassLoader().getResourceAsStream(filename);
-
         try {
-            BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
+            BufferedReader buffer = new BufferedReader(new FileReader(new File(filename)));
 
             String line;
             while((line = buffer.readLine()) != null){

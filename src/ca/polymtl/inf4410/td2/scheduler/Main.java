@@ -10,10 +10,10 @@ import java.util.Observer;
 public class Main {
 
     public static void main(String[] args) {
-        PropertiesReader reader = new PropertiesReader("scheduler/scenario1.properties");
+        PropertiesReader reader = new PropertiesReader("resources/scheduler/scenario1.properties");
         String[] ipAddress = reader.getServerAddr();
 
-        TaskManager queue = new TaskManager("scheduler/donnees-2317.txt");
+        TaskManager queue = new TaskManager("resources/scheduler/donnees-2317.txt");
         queue.addObserver((o, arg) -> {
             if(o instanceof TaskManager){
                 if(((TaskManager) o).isFinish()){
@@ -24,7 +24,7 @@ public class Main {
 
         for(String ip : ipAddress){
             try {
-                ServerThread thread = new ServerThread(queue, Integer.parseInt(ip));
+                ServerThread thread = new ServerThread(queue, ip.trim());
                 thread.start();
 
             } catch (Exception e) {

@@ -8,7 +8,7 @@ import ca.polymtl.inf4410.td2.shared.model.ITask;
 
 public interface ServerInterface extends Remote {
 	
-	public int work(Set<ITask> tasks) throws RemoteException;
+	int work(Set<ITask> tasks) throws RemoteException;
 
 }
   
