@@ -32,7 +32,20 @@ public class Server implements ServerInterface {
 		}
 		try {
 			String name = "Server";
-			ServerInterface server = new Server(Integer.parseInt(args[0]),Double.parseDouble(args[1]));
+			Integer init_q = 10;
+			Double init_malice = 0.0;
+			
+			//tests sur les arguments
+			if(args.length == 1){
+				init_q = Integer.parseInt(args[0]);
+			}
+			if(args.length == 2){
+				init_q =Integer.parseInt(args[0]);
+				init_malice = Double.parseDouble(args[1]);
+			}
+			
+			//initialisation du serveur
+			ServerInterface server = new Server(init_q,init_malice);
 			ServerInterface stub =
 					(ServerInterface) UnicastRemoteObject.exportObject(server,0);
 
@@ -52,47 +65,44 @@ public class Server implements ServerInterface {
 		double T = 0;
 		int result = 0;
 		double random_refus = 0;
-		double random_malice = Math.random();
+		double random_malice = 0;
 		
-		//CORPS
-		//prise en compte du refus
-		System.out.println("Traitement de " + tasks.size() + "opérations.");
-		if(tasks.size() > q)
+		//corps
+		//calcul de la variable random malice
+		random_malice=Math.random();
+		//calcul du résultat en prenant en compte le refus et la malice
+		System.out.println("Traitement de " + tasks.size() + " opérations.");
+		if(tasks.size() > q){
 			T=((tasks.size()-q)/9*q)*100;
 			random_refus = Math.random();
 			if(random_refus < T)
-				throw new RemoteException();
-			else for(ITask t : tasks)
 			{
-				if(t instanceof PrimeTask){
-					result = (result + Operations.prime(t.getValue())) % 5000;
-				}
-				else if(t instanceof FibonacciTask){
-					result = (result + Operations.fib(t.getValue())) % 5000;
-				}
+				System.out.println(" Refus !");
+				throw new RemoteException();
 			}
-		
-		//Prise en compte de la malice
-		if(random_malice < malice )
+		}
+		else if(random_malice < malice )
+				for(ITask t : tasks)
+				{
+					if(t instanceof PrimeTask){
+						result = (result + Operations.prime(t.getValue())) % 4000 + 50;
+					}
+					else if(t instanceof FibonacciTask){
+						result = (result + Operations.fib(t.getValue())) % 4000 - 10;
+					}
+				}
+		else
 			for(ITask t : tasks)
 			{
 				if(t instanceof PrimeTask){
-					result = (result + Operations.prime(t.getValue())) % 4000 + 50;
-				}
-				else if(t instanceof FibonacciTask){
-					result = (result + Operations.fib(t.getValue())) % 4000 - 10;
-				}
-			}
-		else for(ITask t : tasks)
-			{
-				if(t instanceof PrimeTask){
 					result = (result + Operations.prime(t.getValue())) % 5000;
-				}
+					}
 				else if(t instanceof FibonacciTask){
 					result = (result + Operations.fib(t.getValue())) % 5000;
-				}
+					}
 			}
-		System.out.println("Resultat des calculs :" + result);
+					
+		System.out.println("Resultat des calculs : " + result);
 		return result;
 	}
 	
