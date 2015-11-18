@@ -2,12 +2,14 @@ package ca.polymtl.inf4410.td2.scheduler;
 
 
 import ca.polymtl.inf4410.td2.shared.ServerInterface;
+import ca.polymtl.inf4410.td2.shared.model.ITask;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -55,16 +57,18 @@ public class ServerThread extends Thread implements Observer {
             if(toSend != null){
 
                 nbSended = toSend.getTasks().size();
+                List<ITask> listToSend = toSend.getTasks();
                 // Send back to server
                 try {
                     indexFisrt = 0;
                     res = 0;
+                    System.out.println(Thread.currentThread() + " Traitement de "+ nbSended+" taches.");
 
                     do {
-                        indexLast = indexFisrt + Math.min(nbSended-indexFisrt, nbTaskSended)-1;
-                        System.out.println(Thread.currentThread() + " Traitement de "+ (indexLast-indexFisrt) +" / "+nbSended+" taches.");
+                        indexLast = indexFisrt + Math.min(nbSended-indexFisrt, nbTaskSended) - 1;
+                        System.out.println(Thread.currentThread() + "\t "+ indexFisrt+" - "+ indexLast+"");
 
-                        res = (res + server.work(new HashSet<>(toSend.getTasks().subList(indexFisrt, indexLast)))) % 5000;
+                        res = (res + server.work(new HashSet<>(listToSend.subList(indexFisrt, indexLast)))) % 5000;
                         indexFisrt = indexLast+1;
                     }while(indexLast != nbSended-1);
 
