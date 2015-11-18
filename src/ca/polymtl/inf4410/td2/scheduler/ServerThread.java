@@ -51,10 +51,10 @@ public class ServerThread extends Thread implements Observer {
         while(!taskManager.isFinish() && nbFailure < MAX_FAILURE){
 
             // Read x task
-            System.out.println(Thread.currentThread() + " Demande de "+nbTaskSended+" taches.");
             toSend = taskManager.getTask(nbTaskSended);
 
             if(toSend != null){
+                System.out.println(Thread.currentThread() + " Demande de "+nbTaskSended+" taches.");
 
                 nbSended = toSend.getTasks().size();
                 List<ITask> listToSend = toSend.getTasks();
@@ -83,6 +83,9 @@ public class ServerThread extends Thread implements Observer {
                     nbTaskSended = nbSended - Math.round(nbSended/2);
                     nbFailure ++;
                 }
+            }
+            else{
+                taskManager.revalidate();
             }
 
             if(taskManager.isEmpty() && !taskManager.isFinish()){

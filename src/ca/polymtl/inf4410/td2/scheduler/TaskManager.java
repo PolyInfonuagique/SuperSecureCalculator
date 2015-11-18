@@ -126,4 +126,10 @@ public class TaskManager extends Observable{
         }
         return isEmpty;
     }
+
+    public synchronized void revalidate() {
+        for(PartialResult r : this.listToValidate){
+            updateResult(r);
+        }
+    }
 }
