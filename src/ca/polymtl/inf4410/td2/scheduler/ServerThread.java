@@ -2,15 +2,12 @@ package ca.polymtl.inf4410.td2.scheduler;
 
 
 import ca.polymtl.inf4410.td2.shared.ServerInterface;
-import ca.polymtl.inf4410.td2.shared.model.ITask;
 
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -45,28 +42,31 @@ public class ServerThread extends Thread implements Observer {
     public void run() {
         super.run();
 
-        List<ITask> toSend;
-        int nbSended, serverResult, nbFailure = 0;
+        PartialResult toSend;
+        int nbSended, nbFailure = 0;
 
         while(!taskManager.isFinish() && nbFailure < MAX_FAILURE){
 
             // Read x task
             System.out.println(Thread.currentThread() + " Demande de "+nbTaskSended+" taches.");
             toSend = taskManager.getTask(nbTaskSended);
-            nbSended = toSend.size();
-            System.out.println(Thread.currentThread() + " Traitement de "+nbSended+" taches.");
 
-            // Send back to server
-            try {
-                serverResult = server.work(new HashSet<>(toSend));
+            if(toSend != null){
+                nbSended = toSend.getTasks().size();
+                System.out.println(Thread.currentThread() + " Traitement de "+nbSended+" taches.");
 
-                taskManager.updateResult(serverResult, nbSended);
-                nbTaskSended = nbSended + DELTA_ADD_TASK;
-                nbFailure = 0;
-            } catch (Exception e) {
-                taskManager.addTask(toSend);
-                nbTaskSended = nbSended - Math.round(nbSended/2);
-                nbFailure ++;
+                // Send back to server
+                try {
+                    toSend.setResult(server.work(new HashSet<>(toSend.getTasks())));
+
+                    taskManager.updateResult(toSend);
+                    nbTaskSended = nbSended + DELTA_ADD_TASK;
+                    nbFailure = 0;
+                } catch (Exception e) {
+                    taskManager.addTask(toSend);
+                    nbTaskSended = nbSended - Math.round(nbSended/2);
+                    nbFailure ++;
+                }
             }
 
             if(taskManager.isEmpty() && !taskManager.isFinish()){
@@ -78,7 +78,7 @@ public class ServerThread extends Thread implements Observer {
             }
         }
         System.out.println(Thread.currentThread() + " Fin.");
-
+        taskManager.deleteObserver(this);
     }
 
 

@@ -3,37 +3,67 @@ package ca.polymtl.inf4410.td2.scheduler;
 import ca.polymtl.inf4410.td2.shared.model.ITask;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class TaskManager extends Observable{
 
-    private ConcurrentLinkedQueue<ITask> queue = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<ITask> queueToDo = new ConcurrentLinkedQueue<>();
+    private ArrayList<PartialResult> listToValidate = new ArrayList<>();
     private int nbTaskToExecute;
     private int result = 0;
     private final Object MUTEX_RESULT = new Object();
+    private int nbThreadAlive = 0;
+    private boolean secureMode = false;
 
-    public TaskManager(String filename) {
-         addTask(filename);
+    public TaskManager(String filename, boolean secureMode) {
+        addTask(filename);
+        this.secureMode = secureMode;
     }
 
     private void addTask(String filename){
-        queue.addAll(TaskReader.getTaskList(filename));
-        nbTaskToExecute = queue.size();
+        queueToDo.addAll(TaskReader.getTaskList(filename));
+        nbTaskToExecute = queueToDo.size();
     }
 
-    public synchronized List<ITask> getTask(int nb){
+    @Override
+    public synchronized void addObserver(Observer o) {
+        super.addObserver(o);
+        if(o instanceof ServerThread){
+            nbThreadAlive ++;
+        }
+    }
+
+    @Override
+    public synchronized void deleteObserver(Observer o) {
+        super.deleteObserver(o);
+        if(o instanceof ServerThread){
+            nbThreadAlive --;
+        }
+    }
+
+    public synchronized PartialResult getTask(int nb){
         int i = 0;
         ArrayList<ITask> returnTask = new ArrayList<>();
 
-        while(i<nb && !queue.isEmpty()){
-             returnTask.add(queue.poll());
+        while(i<nb && !queueToDo.isEmpty()){
+             returnTask.add(queueToDo.poll());
             i++;
         }
 
-        return returnTask;
+        if(returnTask.size() > 0){
+            return new PartialResult(returnTask);
+        }
+        else if(secureMode){
+            for(PartialResult r : listToValidate){
+                if(r.toProcess(Thread.currentThread().getId())){
+                    return r;
+                }
+            }
+        }
+        return null;
     }
 
     public int getResult(){
@@ -44,30 +74,56 @@ public class TaskManager extends Observable{
 
     public boolean isFinish(){
         synchronized (MUTEX_RESULT){
-            return nbTaskToExecute == 0;
+            return nbTaskToExecute == 0 && listToValidate.isEmpty();
         }
     }
 
-    public void updateResult(int intermediateResult, int nbTaskHandled){
+    public void updateResult(PartialResult partialResult){
         synchronized (MUTEX_RESULT){
-            result = (intermediateResult + result) % 5000;
-            nbTaskToExecute -= nbTaskHandled;
+            if(!listToValidate.contains(partialResult)){
+                nbTaskToExecute -= partialResult.getTasks().size();
 
-            if(nbTaskToExecute == 0){
-                this.setChanged();
-                this.notifyObservers();
+                if(secureMode){
+                    listToValidate.add(partialResult);
+                }
+                else{
+                    try{
+                        int res = partialResult.getResult(1);
+                        result = (res + result) % 5000;
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            else{
+                try{
+                    int res = partialResult.getResult(nbThreadAlive);
+                    result = (res + result) % 5000;
+                    listToValidate.remove(partialResult);
+                } catch (Exception ignored) {
+                }
+            }
+
+            this.setChanged();
+            this.notifyObservers();
+        }
+    }
+
+    public void addTask(PartialResult partialResult){
+        synchronized (MUTEX_RESULT){
+            if(!listToValidate.contains(partialResult)){
+                this.queueToDo.addAll(partialResult.getTasks());
             }
         }
-    }
-
-    public void addTask(List<ITask> task){
-        this.queue.addAll(task);
 
         this.setChanged();
         this.notifyObservers();
     }
 
     public boolean isEmpty(){
-        return queue.isEmpty();
+        boolean isEmpty = queueToDo.isEmpty();
+        for(PartialResult r : listToValidate){
+            isEmpty &= !r.toProcess(Thread.currentThread().getId());
+        }
+        return isEmpty;
     }
 }

@@ -81,7 +81,8 @@ public class Server implements ServerInterface {
 				throw new RemoteException();
 			}
 		}
-		else if(random_malice < malice )
+
+		if(random_malice < malice )
 				for(ITask t : tasks)
 				{
 					if(t instanceof PrimeTask){
