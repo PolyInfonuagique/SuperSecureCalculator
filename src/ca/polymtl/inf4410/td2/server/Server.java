@@ -49,7 +49,7 @@ public class Server implements ServerInterface {
 			ServerInterface stub =
 					(ServerInterface) UnicastRemoteObject.exportObject(server,0);
 
-			Registry registry = LocateRegistry.getRegistry();
+			Registry registry = LocateRegistry.getRegistry(5002);
 			registry.rebind(name,stub);
 
 			System.out.println("Server Bound");
@@ -82,7 +82,8 @@ public class Server implements ServerInterface {
 			}
 		}
 
-		if(random_malice < malice )
+		if(random_malice < malice ){
+			System.out.println("Malicieux");
 				for(ITask t : tasks)
 				{
 					if(t instanceof PrimeTask){
@@ -92,6 +93,7 @@ public class Server implements ServerInterface {
 						result = (result + Operations.fib(t.getValue())) % 4000 - 10;
 					}
 				}
+		}
 		else
 			for(ITask t : tasks)
 			{

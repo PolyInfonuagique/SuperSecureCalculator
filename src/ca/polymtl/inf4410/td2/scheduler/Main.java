@@ -10,7 +10,7 @@ public class Main {
         PropertiesReader reader = new PropertiesReader("resources/scheduler/scenario1.properties");
         String[] ipAddress = reader.getServerAddr();
 
-        TaskManager queue = new TaskManager("resources/scheduler/donnees-2317.txt",false);
+        TaskManager queue = new TaskManager("resources/scheduler/donnees-2317.txt",true);
         queue.addObserver((o, arg) -> {
             if(o instanceof TaskManager){
                 if(((TaskManager) o).isFinish()){

@@ -33,7 +33,7 @@ public class ServerThread extends Thread implements Observer {
         }
 
         try {
-            Registry registry = LocateRegistry.getRegistry(ipAddress);
+            Registry registry = LocateRegistry.getRegistry(ipAddress,5002);
             server = (ServerInterface) registry.lookup("Server");
         } catch (RemoteException | NotBoundException e) {
             throw new Exception("Echec de la connexion avec le serveur", e);
