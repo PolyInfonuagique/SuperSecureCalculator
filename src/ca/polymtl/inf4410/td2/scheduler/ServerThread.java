@@ -74,7 +74,9 @@ public class ServerThread extends Thread implements Observer {
 
                     toSend.setResult(res);
                     taskManager.updateResult(toSend);
-                    nbTaskSended = nbSended + DELTA_ADD_TASK;
+                    if(nbSended == nbTaskSended ){
+                        nbTaskSended += DELTA_ADD_TASK;
+                    }
                     nbFailure = 0;
                 } catch (Exception e) {
                     taskManager.addTask(toSend);
