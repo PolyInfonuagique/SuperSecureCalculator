@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for i in {1..10}
+do
+   ./scheduler donnees-2317.txt
+   ./scheduler donnees-2606.txt
+   ./scheduler donnees-4172.txt
+done

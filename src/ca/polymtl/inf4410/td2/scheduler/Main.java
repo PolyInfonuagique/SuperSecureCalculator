@@ -10,15 +10,13 @@ public class Main {
         PropertiesReader reader = new PropertiesReader("resources/scheduler/scenario1.properties");
         String[] ipAddress = reader.getServerAddr();
 
-        TaskManager queue = new TaskManager("resources/scheduler/donnees-2317.txt",true);
+        TaskManager queue = new TaskManager("resources/scheduler/"+args[0],args.length>1);
         queue.addObserver((o, arg) -> {
             if(o instanceof TaskManager){
                 if(((TaskManager) o).isFinish()){
-                    System.out.println("Resultat : " + ((TaskManager) o).getResult());
-
                     final long endTime = System.nanoTime();
                     double duration = (endTime - startTime)/1000000;  //divide by 1000000 to get milliseconds.
-                    System.out.println("Temps d'execution : " + duration + "ms");
+                    System.out.println(((TaskManager) o).getResult() + " : " + duration);
                 }
             }
         });

@@ -128,8 +128,10 @@ public class TaskManager extends Observable{
     }
 
     public synchronized void revalidate() {
-        for(PartialResult r : this.listToValidate){
-            updateResult(r);
+        synchronized (MUTEX_RESULT) {
+            for (PartialResult r : this.listToValidate) {
+                updateResult(r);
+            }
         }
     }
 }

@@ -54,7 +54,6 @@ public class ServerThread extends Thread implements Observer {
             toSend = taskManager.getTask(nbTaskSended);
 
             if(toSend != null){
-                System.out.println(Thread.currentThread() + " Demande de "+nbTaskSended+" taches.");
 
                 nbSended = toSend.getTasks().size();
                 List<ITask> listToSend = toSend.getTasks();
@@ -62,11 +61,9 @@ public class ServerThread extends Thread implements Observer {
                 try {
                     indexFisrt = 0;
                     res = 0;
-                    System.out.println(Thread.currentThread() + " Traitement de "+ nbSended+" taches.");
 
                     do {
                         indexLast = indexFisrt + Math.min(nbSended-indexFisrt, nbTaskSended);
-                        System.out.println(Thread.currentThread() + "\t "+ indexFisrt+" - "+ indexLast+"");
 
                         res = (res + server.work(new HashSet<>(listToSend.subList(indexFisrt, indexLast)))) % 5000;
                         indexFisrt = indexLast;
@@ -96,7 +93,6 @@ public class ServerThread extends Thread implements Observer {
                 }
             }
         }
-        System.out.println(Thread.currentThread() + " Fin.");
         taskManager.deleteObserver(this);
     }
 
