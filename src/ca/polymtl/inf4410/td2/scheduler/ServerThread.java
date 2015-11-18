@@ -44,6 +44,7 @@ public class ServerThread extends Thread implements Observer {
 
         PartialResult toSend;
         int nbSended, nbFailure = 0;
+        int indexFisrt, indexLast, res;
 
         while(!taskManager.isFinish() && nbFailure < MAX_FAILURE){
 
@@ -52,13 +53,22 @@ public class ServerThread extends Thread implements Observer {
             toSend = taskManager.getTask(nbTaskSended);
 
             if(toSend != null){
-                nbSended = toSend.getTasks().size();
-                System.out.println(Thread.currentThread() + " Traitement de "+nbSended+" taches.");
 
+                nbSended = toSend.getTasks().size();
                 // Send back to server
                 try {
-                    toSend.setResult(server.work(new HashSet<>(toSend.getTasks())));
+                    indexFisrt = 0;
+                    res = 0;
 
+                    do {
+                        indexLast = indexFisrt + Math.min(nbSended-indexFisrt, nbTaskSended)-1;
+                        System.out.println(Thread.currentThread() + " Traitement de "+ (indexLast-indexFisrt) +" / "+nbSended+" taches.");
+
+                        res = (res + server.work(new HashSet<>(toSend.getTasks().subList(indexFisrt, indexLast)))) % 5000;
+                        indexFisrt = indexLast+1;
+                    }while(indexLast != nbSended-1);
+
+                    toSend.setResult(res);
                     taskManager.updateResult(toSend);
                     nbTaskSended = nbSended + DELTA_ADD_TASK;
                     nbFailure = 0;
