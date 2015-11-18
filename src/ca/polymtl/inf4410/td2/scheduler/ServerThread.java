@@ -84,11 +84,11 @@ public class ServerThread extends Thread implements Observer {
                     nbFailure ++;
                 }
             }
-            else{
-                taskManager.revalidate();
-            }
-
             if(taskManager.isEmpty() && !taskManager.isFinish()){
+                if(toSend == null){
+                    taskManager.revalidate();
+                }
+
                 synchronized (LOCK){
                     try {
                         LOCK.wait(500);
