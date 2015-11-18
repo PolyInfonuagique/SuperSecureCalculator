@@ -82,29 +82,21 @@ public class Server implements ServerInterface {
 			}
 		}
 
-		if(random_malice < malice ){
-			System.out.println("Malicieux");
-				for(ITask t : tasks)
-				{
-					if(t instanceof PrimeTask){
-						result = (result + Operations.prime(t.getValue())) % 4000 + 50;
-					}
-					else if(t instanceof FibonacciTask){
-						result = (result + Operations.fib(t.getValue())) % 4000 - 10;
-					}
+		for(ITask t : tasks)
+		{
+			if(t instanceof PrimeTask){
+				result = (result + Operations.prime(t.getValue())) % 5000;
+				}
+			else if(t instanceof FibonacciTask){
+				result = (result + Operations.fib(t.getValue())) % 5000;
 				}
 		}
-		else
-			for(ITask t : tasks)
-			{
-				if(t instanceof PrimeTask){
-					result = (result + Operations.prime(t.getValue())) % 5000;
-					}
-				else if(t instanceof FibonacciTask){
-					result = (result + Operations.fib(t.getValue())) % 5000;
-					}
-			}
-					
+
+		if(random_malice < malice ){
+			System.out.println("Malicieux");
+			result *= random_malice;
+		}
+
 		System.out.println("Resultat des calculs : " + result);
 		return result;
 	}
