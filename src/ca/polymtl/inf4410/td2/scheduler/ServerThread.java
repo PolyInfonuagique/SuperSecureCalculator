@@ -65,12 +65,12 @@ public class ServerThread extends Thread implements Observer {
                     System.out.println(Thread.currentThread() + " Traitement de "+ nbSended+" taches.");
 
                     do {
-                        indexLast = indexFisrt + Math.min(nbSended-indexFisrt, nbTaskSended) - 1;
+                        indexLast = indexFisrt + Math.min(nbSended-indexFisrt, nbTaskSended);
                         System.out.println(Thread.currentThread() + "\t "+ indexFisrt+" - "+ indexLast+"");
 
                         res = (res + server.work(new HashSet<>(listToSend.subList(indexFisrt, indexLast)))) % 5000;
-                        indexFisrt = indexLast+1;
-                    }while(indexLast != nbSended-1);
+                        indexFisrt = indexLast;
+                    }while(indexLast != nbSended);
 
                     toSend.setResult(res);
                     taskManager.updateResult(toSend);
