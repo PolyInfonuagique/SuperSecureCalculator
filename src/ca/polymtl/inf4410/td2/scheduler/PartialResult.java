@@ -28,13 +28,25 @@ public class PartialResult {
     }
 
     public synchronized int getResult(final int nbThreadAlive) throws Exception {
+        System.out.println(Thread.currentThread() + " GetResult - nb result : "+threadResult.size()+"/"+nbThreadAlive);
+
         if(threadResult.size() >= nbThreadAlive){
+
+            System.out.println(Thread.currentThread() + "\t\t\t Thread result : ");
+            threadResult.forEach((aLong, integer) -> System.out.println(Thread.currentThread() + "\t\t\t\t\t\t ID:" + aLong + "-" + integer));
+
+            System.out.println(Thread.currentThread() + "\t\t\t Occur result : ");
+            occurResult.forEach((aLong, integer) -> System.out.println(Thread.currentThread() + "\t\t\t\t\t\t ID:" + aLong + "-" + integer));
+
             Optional<Map.Entry<Integer, Integer>> maxValue = occurResult.entrySet().stream().max((o1, o2) -> o1.getValue().compareTo(o2.getValue()));
             if(maxValue.get().getValue() >= Math.round(nbThreadAlive*0.6)){
+                System.out.println(Thread.currentThread() + " -> Valeur retenu : "+maxValue.get().getKey()+" ("+maxValue.get().getValue()+" occurences)");
                 return maxValue.get().getKey();
             }
             else{
                 Optional<Map.Entry<Integer, Integer>> minValue = occurResult.entrySet().stream().min((o1, o2) -> o1.getValue().compareTo(o2.getValue()));
+                System.out.println(Thread.currentThread() + " -> Valeur supprimée : "+minValue.get().getKey()+" ("+minValue.get().getValue()+" occurences)");
+
                 threadResult.forEach((threadId, res) -> {
                     if(res.equals(minValue.get().getKey())){
                         threadResult.remove(threadId);
