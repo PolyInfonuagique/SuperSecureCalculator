@@ -39,8 +39,8 @@ public class PartialResult {
             occurResult.forEach((aLong, integer) -> System.out.println(Thread.currentThread() + "\t\t\t\t\t\t ID:" + aLong + "-" + integer));
 
             Optional<Map.Entry<Integer, Integer>> maxValue = occurResult.entrySet().stream().max((o1, o2) -> o1.getValue().compareTo(o2.getValue()));
-            System.out.println("Nb thread vivant : "+nbThreadAlive+", nb occurence requis : "+Math.floor(nbThreadAlive*0.6));
-            if(maxValue.get().getValue() >= Math.floor(nbThreadAlive*0.6)){
+            System.out.println("Nb thread vivant : "+nbThreadAlive+", nb occurence requis : "+Math.ceil(nbThreadAlive*0.6));
+            if(maxValue.get().getValue() >= Math.ceil(nbThreadAlive*0.6)){
                 System.out.println(Thread.currentThread() + " -> Valeur retenu : "+maxValue.get().getKey()+" ("+maxValue.get().getValue()+" occurences)");
                 return maxValue.get().getKey();
             }
