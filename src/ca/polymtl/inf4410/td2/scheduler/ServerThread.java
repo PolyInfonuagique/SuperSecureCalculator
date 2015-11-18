@@ -15,9 +15,9 @@ import java.util.Observer;
 
 public class ServerThread extends Thread implements Observer {
 
-    private static final int DELTA_ADD_TASK = 2;
+    private static final int DELTA_ADD_TASK = 5;
     private static final int MAX_FAILURE = 10;
-    private int nbTaskSended = 10;
+    private int nbTaskSended = 20;
 
     private ServerInterface server = null;
     private TaskManager taskManager = null;
@@ -88,7 +88,7 @@ public class ServerThread extends Thread implements Observer {
             if(taskManager.isEmpty() && !taskManager.isFinish()){
                 synchronized (LOCK){
                     try {
-                        LOCK.wait();
+                        LOCK.wait(500);
                     } catch (InterruptedException ignored) {}
                 }
             }
