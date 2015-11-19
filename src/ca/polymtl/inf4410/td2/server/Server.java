@@ -12,20 +12,35 @@ import ca.polymtl.inf4410.td2.shared.model.PrimeTask;
 import ca.polymtl.inf4410.td2.shared.model.ITask;
 import ca.polymtl.inf4410.td2.shared.model.FibonacciTask;
 
-
+/**
+ * Server class
+ */
 public class Server implements ServerInterface {
-	
-	//nombre d'opérations acceptées par tâche
+
+	/**
+	 * Nombre d'opérations acceptées par tâche
+	 */
 	private Integer q;
-	//pourcentage de "malice" du serveur
+
+	/**
+	 * Pourcentage de "malice" du serveur
+	 */
 	private double malice;
 	
 	protected Server(Integer q, double malice) throws RemoteException {
 		this.q = q;
 		this.malice=malice;
 	}
-	
-	
+
+
+	/**
+	 * Main class pour lancer le serveur
+	 * Prends en argument :
+	 * - qi : nombre de tâche acceptable par le serveur
+	 * - taux de malice
+	 *
+	 * @param args String[]
+	 */
 	public static void main(String[] args){
 		if(System.getSecurityManager()==null){
 			System.setSecurityManager(new SecurityManager());
@@ -70,7 +85,7 @@ public class Server implements ServerInterface {
 		//corps
 		//calcul de la variable random malice
 		random_malice=Math.random();
-		//calcul du résultat en prenant en compte le refus et la malice
+		//calcul du résultat en prenant en compte le refus
 		System.out.println("Traitement de " + tasks.size() + " opérations.");
 		if(tasks.size() > q){
 			T=((tasks.size()-q)/9*q)*100;
@@ -92,6 +107,7 @@ public class Server implements ServerInterface {
 				}
 		}
 
+		//prise en compte de la malice
 		if(random_malice < malice ){
 			System.out.println("Malicieux");
 			result *= random_malice;

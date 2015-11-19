@@ -9,6 +9,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TaskReader class
+ */
 public class TaskReader {
 
     private static ITask toTask(String t){
@@ -28,6 +31,12 @@ public class TaskReader {
         return task;
     }
 
+    /**
+     * Lit le fichier de tâche à exécuter et renvoi une liste de tâche
+     *
+     * @param filename chemin vers le fichier
+     * @return List<ITask>
+     */
     public static List<ITask> getTaskList(String filename){
         List<ITask> list = new ArrayList<>();
 
@@ -39,10 +48,7 @@ public class TaskReader {
                  list.add(toTask(line));
             }
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        catch (IOException ignored) {}
 
         return list;
     }

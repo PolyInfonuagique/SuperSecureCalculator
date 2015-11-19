@@ -1,5 +1,9 @@
 package ca.polymtl.inf4410.td2.shared.model;
 
+/**
+ * PrimeTask
+ * Représente le calcule du plus grand facteur commun
+ */
 public class PrimeTask implements ITask{
     private int value;
 
